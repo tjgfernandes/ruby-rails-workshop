@@ -1,10 +1,10 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
+require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 
 def my_global_method(a,b)
   a + b
 end
 
-class AboutMethods < Neo::Koan
+class AboutMethods < EdgeCase::Koan
 
   def test_calling_global_methods
     assert_equal __, my_global_method(2,3)
@@ -30,7 +30,7 @@ class AboutMethods < Neo::Koan
     #
   end
 
-  # NOTE: wrong number of arguments is not a SYNTAX error, but a
+  # NOTE: wrong number of argument is not a SYNTAX error, but a
   # runtime error.
   def test_calling_global_methods_with_wrong_number_of_arguments
     exception = assert_raise(___) do
@@ -62,7 +62,6 @@ class AboutMethods < Neo::Koan
   end
 
   def test_calling_with_variable_arguments
-    assert_equal __, method_with_var_args.class
     assert_equal __, method_with_var_args
     assert_equal __, method_with_var_args(:one)
     assert_equal __, method_with_var_args(:one, :two)
@@ -93,16 +92,16 @@ class AboutMethods < Neo::Koan
 
   # ------------------------------------------------------------------
 
-  def my_method_in_the_same_class(a, b)
+  def my_same_class_method(a, b)
     a * b
   end
 
   def test_calling_methods_in_same_class
-    assert_equal __, my_method_in_the_same_class(3,4)
+    assert_equal __, my_same_class_method(3,4)
   end
 
   def test_calling_methods_in_same_class_with_explicit_receiver
-    assert_equal __, self.my_method_in_the_same_class(3,4)
+    assert_equal __, self.my_same_class_method(3,4)
   end
 
   # ------------------------------------------------------------------

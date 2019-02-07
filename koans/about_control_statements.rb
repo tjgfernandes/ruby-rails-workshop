@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/neo')
+require File.expand_path(File.dirname(__FILE__) + '/edgecase')
 
-class AboutControlStatements < Neo::Koan
+class AboutControlStatements < EdgeCase::Koan
 
   def test_if_then_else_statements
     if true
@@ -59,16 +59,8 @@ class AboutControlStatements < Neo::Koan
 
   def test_unless_statement
     result = :default_value
-    unless false    # same as saying 'if !false', which evaluates as 'if true'
+    unless false
       result = :false_value
-    end
-    assert_equal __, result
-  end
-
-  def test_unless_statement_evaluate_true
-    result = :default_value
-    unless true    # same as saying 'if !true', which evaluates as 'if false'
-      result = :true_value
     end
     assert_equal __, result
   end
@@ -101,23 +93,13 @@ class AboutControlStatements < Neo::Koan
     assert_equal __, result
   end
 
-  def test_break_statement_returns_values
-    i = 1
-    result = while i <= 10
-      break i if i % 2 == 0
-      i += 1
-    end
-
-    assert_equal __, result
-  end
-
   def test_next_statement
     i = 0
     result = []
     while i < 10
       i += 1
       next if (i % 2) == 0
-      result << i
+      result << i 
     end
     assert_equal __, result
   end
@@ -129,14 +111,6 @@ class AboutControlStatements < Neo::Koan
       result << item.upcase
     end
     assert_equal [__, __, __], result
-  end
-
-  def test_times_statement
-    sum = 0
-    10.times do
-      sum += 1
-    end
-    assert_equal __, sum
   end
 
 end
