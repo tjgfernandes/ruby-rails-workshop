@@ -44,10 +44,24 @@
 7. ruby -v
 8. gem install bundler
 
-# Rails Application
+# Rails 1st Application
 
 1. gem install rails
 2. rails new MyApp
 3. cd MyApp
 4. rails s
 5. Open http://localhost:3000
+
+# Creating a Rails ToDoApp
+
+1. rails new ToDoApp -m template.rb
+2. cd ToDoApp
+3. rails generate scaffold ToDoItem done:boolean title:string
+4. rails db:migrate
+5. rails db:migrate RAILS_ENV=test
+6. rails s
+7. MVC, directory, generated files
+8. Models
+9. bootstrap and views
+10. rails generate channel ToDoItem
+11. rails generate scaffold Category (belongs_to, has_many)
