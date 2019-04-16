@@ -39,10 +39,13 @@
 2. brew install ruby-build
 3. curl -sSL https://get.rvm.io | bash -s stable
 4. source ~/.rvm/scripts/rvm
-5. rvm install ruby-2.5.3
-6. rvm use 2.5.3 --default
+5. rvm install ruby-2.6.1
+6. rvm use 2.6.1 --default
 7. ruby -v
 8. gem install bundler
+
+## Using Docker
+TBD
 
 # Rails 1st Application
 
@@ -56,12 +59,14 @@
 
 1. rails new ToDoApp -m template.rb
 2. cd ToDoApp
-3. rails generate scaffold ToDoItem done:boolean title:string
+3. rails generate scaffold Task title:string done:boolean
 4. rails db:migrate
 5. rails db:migrate RAILS_ENV=test
 6. rails s
 7. MVC, directory, generated files
 8. Models
 9. bootstrap and views
-10. rails generate channel ToDoItem
-11. rails generate scaffold Category (belongs_to, has_many)
+10. rails generate scaffold Category name:string (belongs_to, has_many)
+11. rails generate migration add_category_to_tasks category:references
+12. rails generate scaffold Tag name:string
+13. rails generate channel Task

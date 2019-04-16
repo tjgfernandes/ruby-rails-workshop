@@ -1,5 +1,5 @@
 create_file '.ruby-gemset' do
-  "ruby_koans"
+  "ruby-rails-workshop"
 end
 remove_file 'README.doc'
 create_file 'README.md'
@@ -28,6 +28,7 @@ gem 'slim-rails'
 gem 'jquery-rails'
 gem 'bootstrap', '~> 4.1.3'
 gem "font-awesome-rails"
+gem 'letter_opener'
 run 'bundle install'
 generate 'rspec:install'
 git :init
