@@ -1,0 +1,184 @@
+------------ layout ------------------
+doctype html
+html
+  head
+    title
+      | To do app
+
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+  body
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      a.navbar-brand[href="#"]
+        | To do App
+      button.navbar-toggler[type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"]
+        span.navbar-toggler-icon
+      #navbarSupportedContent.collapse.navbar-collapse
+        ul.navbar-nav.mr-auto
+          li.nav-item[class="#{nav_item_active?(controller_name,'tasks')}"]
+            / = link_to 'Home', root_path, class: "nav-link"
+          li.nav-item[class="#{nav_item_active?(controller_name,'categories')}"]
+            / = link_to 'Categories', categories_path, class: "nav-link"
+    .container
+      = yield
+---------------------------------
+
+
+-------------------application helper -----------
+def nav_item_active?(controller_name, nav_item)
+  controller_name == nav_item ? 'active' : ''
+end
+------------------
+
+------------------ tasks _form
+= form_for @task do |f|
+  - if @task.errors.any?
+    #error_explanation.alert.alert-danger[role="alert"]
+      h2 = "#{pluralize(@task.errors.count, "error")} prohibited this task from being saved:"
+      ul
+        - @task.errors.full_messages.each do |message|
+          li = message
+
+  .field
+    => f.label :done
+    = f.check_box :done
+  .field
+    => f.label :title
+    = f.text_field :title
+  .field
+    => f.label :category
+    = f.select :category_id, Category.all.collect {|p| [p.name, p.id]}, {include_blank: true}
+  .actions
+    = f.submit class: 'btn btn-primary'
+------------------
+
+-------------------- tasks index
+h1 Listing To do items
+
+/ | Filter:
+/
+/ =< link_to 'All', tasks_path
+/ | ,
+/ =< link_to 'Done', done_tasks_path
+/ | ,
+/ =< link_to 'Not done', not_done_tasks_path
+
+table.table.table-striped.table-hover
+  thead.thead-light
+    tr
+      th Status
+      th Category
+      th Title
+      th
+
+  tbody
+    - @tasks.each do |task|
+      = render partial: 'item', locals: {task: task}
+
+br
+
+= link_to 'New To do item', new_task_path, class: 'btn btn-primary'
+
+--------------------
+
+
+----------------------- _task
+tr
+  td
+    = check_box_tag 'task[done]', '1', task.done, onchange: "this.setAttribute('data-params', 'task[done]=' + this.checked*this.checked + '&filter=#{action_name == 'index' ? '' : "#{action_name}_"}')", data: { remote: true, url: task_path(task), method: :patch }
+
+  td = task.category.name
+  td = task.title
+  td
+    => link_to task do
+      = fa_icon 'eye'
+    => link_to edit_task_path(task) do
+      = fa_icon 'edit'
+    => link_to task, data: { confirm: 'Are you sure?' }, method: :delete do
+      = fa_icon 'eraser'
+----------------------------
+
+------------------------- tasks
+- if notice
+  #notice.alert.alert-success.mt-4[role="alert"]
+    = notice
+--------------------------
+
+------------------------- tasks_controller#update
+send("#{params[:filter]}tasks_path")
+-------------------------
+
+
+----------------------- mailer
+def task_done(task)
+  @task = task
+  @time = Time.now
+  mail(subject: "To do item done: #{@task.title} (#{@time})", to: 'tjg.fernandes@gmailcom') do |format|
+    format.html
+    format.text
+  end
+end
+
+------------------------
+
+------------------------ tasks_controller#update
+ApplicationMailer.task_done(@task).deliver_now if @task.done
+---------------------
+
+------------------ application_mailer
+| Task DONE!
+
+
+| The task "#{@task.title}" was done at #{@time}
+----------------------------
+h1 Task DONE!
+
+
+p
+  | The task "#{@task.title}" was done at #{@time}
+-----------------------------
+
+------------------ config/environments/development.rb
+config.action_mailer.delivery_method = :letter_opener
+config.action_mailer.perform_deliveries = true
+---------------------
+
+gem 'devise'
+bundle install
+rails generate devise:install
+
+config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+rails generate devise User
+
+before_action :authenticate_user!
+
+--------------------------- layout.htm.slim#nav
+.pull-right
+  => current_user.email
+  | (#{link_to 'Sign-out', destroy_user_session_path, method: :delete})
+
+
+--------------------------- seeds.rb
+Category.create(name: 'High')
+Category.create(name: 'Medium')
+Category.create(name: 'Low')
+Category.create(name: 'Home')
+Category.create(name: 'Shopping')
+
+Tag.create(name: 'Red')
+Tag.create(name: 'Green')
+Tag.create(name: 'Blue')
+
+----------------------------- has and belongs to many id:false
+rails generate model TagsTask tag:references task:references
+------------------------------
+
+--------------------------- tags _form
+.field
+  => f.label :tags
+  br
+  = f.collection_check_boxes :tag_ids, Tag.all, :id, :name
+  -------------------------------------
